@@ -1,0 +1,89 @@
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Book;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Book>
+ */
+class BookRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Book::class);
+    }
+
+    //    /**
+    //     * @return Book[] Returns an array of Book objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('b')
+    //            ->andWhere('b.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('b.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?Book
+    //    {
+    //        return $this->createQueryBuilder('b')
+    //            ->andWhere('b.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
+
+
+    public function findByTitle(string $title): array
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.title LIKE :title')
+            ->setParameter('title', '%' . $title . '%')
+            ->orderBy('b.title')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function findPublishedAfter(\DateTimeInterface $date): array
+    {
+        return $this->createQueryBuilder('b')
+            ->where('b.publishAt  <= :date')
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->setMaxResults(10)
+            ->getResult()
+        ;
+    }
+
+    public function findByCategory(string $categoryName): array
+    {
+        return $this->createQueryBuilder('b')
+            ->innerJoin('b.categories', 'categories')
+            ->where('categories.name = :category')
+            ->setParameter('category', $categoryName)
+            ->orderBy('b.id')
+            ->getQuery()
+            ->getResult();
+    }
+
+
+    public function findByCategories(array $categories): array
+    {
+        return $this->createQueryBuilder('b')
+            ->innerJoin('b.categories', 'cats')
+            ->where('cats.name IN (:categories)')
+            ->setParameter('categories', $categories)
+            ->orderBy('b.id')
+            ->getQuery()
+            ->getResult();
+    }
+}
