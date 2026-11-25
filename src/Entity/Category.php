@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CategoryRepository;
+use App\State\CategoryAlphabeticalProvider;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
@@ -22,6 +23,11 @@ use Symfony\Component\Serializer\Attribute\Groups as AttributeGroups;
         new GetCollection(
             uriTemplate: '/categories',
         ),
+        new GetCollection(
+            uriTemplate: '/categories/alphabetical',
+            provider: CategoryAlphabeticalProvider::class,
+            normalizationContext: ['groups' => ['category:alphabetical']],
+        ),
         new Post(
             uriTemplate:'/category',
             status: 301
@@ -35,9 +41,11 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[AttributeGroups(['category:alphabetical'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50, nullable: false)]
+    #[AttributeGroups(['category:alphabetical'])]
     private ?string $name = null;
 
     public function getId(): ?int

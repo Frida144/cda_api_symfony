@@ -8,9 +8,6 @@ use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-/**
- * @implements ProviderInterface<User>
- */
 final class ProfileProvider implements ProviderInterface
 {
     public function __construct(
