@@ -43,6 +43,7 @@ security:
         - { path: ^/api/login_check$, roles: PUBLIC_ACCESS }
         - { path: ^/api/user$, methods: [POST], roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: ROLE_USER }
+        - { path: '^/api/profil$', roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:

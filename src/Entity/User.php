@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\State\ProfileProvider;
 use App\State\UserPasswordHasherProcessor;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
@@ -28,6 +29,12 @@ use Symfony\Component\Validator\Constraints as Assert;
             uriTemplate: '/users',
             normalizationContext: ['groups' => ['user:list']],
         ),
+        new Get(
+            uriTemplate: '/profil',
+            security: "is_granted('IS_AUTHENTICATED_FULLY')",
+            normalizationContext: ['groups' => ['user:profil']],
+            provider: ProfileProvider::class,
+        ),
         new Post(
             uriTemplate: '/user',
             normalizationContext: ['groups' => ['user:read']],
@@ -43,19 +50,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[AttributeGroups(['user:list', 'user:read'])]
+    #[AttributeGroups(['user:list', 'user:read', 'user:profil'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[AttributeGroups(['user:list', 'user:read', 'user:write'])]
+    #[AttributeGroups(['user:list', 'user:read', 'user:write', 'user:profil'])]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[AttributeGroups(['user:profil'])]
     private array $roles = [];
 
     /**
@@ -65,6 +73,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[AttributeGroups(['user:write'])]
     private ?string $password = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[AttributeGroups(['user:profil'])]
+    private ?string $firstname = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[AttributeGroups(['user:profil'])]
+    private ?string $lastname = null;
 
     public function getId(): ?int
     {
@@ -139,5 +155,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $data["\0" . self::class . "\0password"] = hash('crc32c', $this->password);
         
         return $data;
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(?string $firstname): static
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname(?string $lastname): static
+    {
+        $this->lastname = $lastname;
+
+        return $this;
     }
 }
