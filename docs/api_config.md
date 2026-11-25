@@ -82,3 +82,35 @@ api_platform:
 
 **Pour hasher un mot de passe Entité User** :
 https://api-platform.com/docs/symfony/user/
+
+## Tester les endpoints dans Bruno
+
+Créer un utilisateur avant de demander son token :
+
+- `POST http://localhost:8000/api/user`
+- Headers : `Content-Type: application/json` et `Accept: application/json`
+- Body :
+
+```json
+{
+  "email": "test@example.com",
+  "password": "MotDePasseTest123!"
+}
+```
+
+La création doit renvoyer `201 Created`. Le mot de passe est hashé avant son enregistrement et n'est pas renvoyé dans la réponse.
+
+Demander ensuite un token avec les mêmes identifiants :
+
+- `POST http://localhost:8000/api/login_check`
+- Header : `Content-Type: application/json`
+- Body :
+
+```json
+{
+  "email": "test@example.com",
+  "password": "MotDePasseTest123!"
+}
+```
+
+La réponse contient un champ `token`. Pour tester une route protégée, appeler par exemple `GET http://localhost:8000/api/users` avec l'authentification Bearer et ce token.

@@ -3,15 +3,16 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\State\UserPasswordHasherProcessor;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\GetCollection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Attribute\Groups as AttributeGroups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -19,32 +20,36 @@ use Symfony\Component\Serializer\Attribute\Groups as AttributeGroups;
 #[ApiResource(
     operations: [
         new Get(
-            uriTemplate: '/user/{id}', 
+            uriTemplate: '/user/{id}',
             requirements: ['id' => '\d+'],
+            normalizationContext: ['groups' => ['user:read']],
         ),
         new GetCollection(
             uriTemplate: '/users',
-            normalizationContext: ['groups' => 'user:list'],
+            normalizationContext: ['groups' => ['user:list']],
         ),
         new Post(
-            uriTemplate:'/user',
-            status: 301
-        )
+            uriTemplate: '/user',
+            normalizationContext: ['groups' => ['user:read']],
+            denormalizationContext: ['groups' => ['user:write']],
+            processor: UserPasswordHasherProcessor::class,
+        ),
     ],
     order: ['id' => 'ASC', 'email' => 'ASC'],
     paginationEnabled: false
 )]
-
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[AttributeGroups(["user:list"])]
+    #[AttributeGroups(['user:list', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[AttributeGroups(["user:list"])]
+    #[Assert\NotBlank]
+    #[Assert\Email]
+    #[AttributeGroups(['user:list', 'user:read', 'user:write'])]
     private ?string $email = null;
 
     /**
@@ -57,6 +62,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[AttributeGroups(['user:write'])]
     private ?string $password = null;
 
     public function getId(): ?int
