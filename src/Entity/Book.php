@@ -3,19 +3,44 @@
 namespace App\Entity;
 
 use App\Repository\BookRepository;
+use App\State\CategoryBooksProvider;
+use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups as AttributeGroups;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BookRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(
+            uriTemplate: '/books/{id}', 
+            requirements: ['id' => '\d+'],
+        ),
+        new GetCollection(
+            uriTemplate: '/Books',
+        ),
+        new Post(
+            uriTemplate:'/book',
+            status: 301
+        )
+    ],
+)]
 class Book
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[AttributeGroups(['category:books'])]
+
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[AttributeGroups(['category:books'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
@@ -25,6 +50,7 @@ class Book
     private ?\DateTimeImmutable $publishAt = null;
 
     #[ORM\Column(length: 50)]
+    #[AttributeGroups(['category:books'])]
     private ?string $author = null;
 
     #[ORM\ManyToOne]
