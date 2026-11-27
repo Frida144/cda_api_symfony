@@ -121,4 +121,49 @@ class BookTest extends TestCase
         //3 Assert
         self::assertNotSame($expect, $actual);
     }
+    public function testAddCategoryStoresTheCategoryInstance(): void
+    {
+        // Arrange
+        $book = new Book();
+        $category = new Category();
+        $expected = [$category];
+
+        // Act
+        $book->addCategory($category);
+
+        // Assert
+        $actual = $book->getCategories()->toArray();
+        self::assertSame($expected, $actual);
+    }
+    public function testAddCategoryDoesNotDuplicateTheSameInstance(): void
+    {
+        // Arrange
+        $book = new Book();
+        $category = new Category();
+
+        // Act
+        $book->addCategory($category);
+        $book->addCategory($category);
+
+        // Assert
+        self::assertCount(1, $book->getCategories());
+    }
+    public function testAddTwoDifferentCategoryInstances(): void
+    {
+        // Arrange
+        $book = new Book();
+        $category1 = new Category();
+        $category2 = new Category();
+        $expected = [$category1, $category2];
+
+        // Act
+        $book->addCategory($category1);
+        $book->addCategory($category2);
+
+        // Assert
+        $actual = $book->getCategories()->toArray();
+        self::assertCount(2, $book->getCategories());
+        self::assertContains($category1, $actual);
+        self::assertContains($category2, $actual);
+    }
 }
