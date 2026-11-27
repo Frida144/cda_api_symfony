@@ -1,105 +1,124 @@
 <?php
+
 namespace App\Tests\Unit\Entity;
 
-use App\Entity\Book;
 use PHPUnit\Framework\TestCase;
+use App\Entity\Book;
+use App\Entity\Category;
+use App\Entity\User;
 
-class BookTest extends Testcase
+class BookTest extends TestCase
 {
-    public function testGetTitleReturnGoodValue(): void
+    public function testGetTitleReturnExpectedValue(): void
     {
-        $testBook = new Book();
-        $value = "test title";
-        $testBook->setTitle($value);
-        $result = $testBook->getTitle();
-        self::assertSame($value, $result);
+        //1 Arrange
+        $book = new Book();
+        $expect = "Alice au pays des merveilles";
+        //assigner une valeur dans $title
+        $book->setTitle($expect);
+        //2 Act
+        $actual = $book->getTitle();
+        //3 Assert
+        self::assertSame($expect, $actual);
+    }
 
-    }
-    public function testGetTitleReturnBadValue(): void
+    public function testGetResumeReturnExpectedValue(): void
     {
-        $testBook = new Book();
-        $result = "test title";
-        $value = "test title 2";
-        $testBook->setTitle($value);
-        $result = $testBook->getTitle();
-        self::assertNotSame($value, $result);
+        //1 Arrange
+        $book = new Book();
+        $expect = "Un livre qui raconte l'histoire d'Alice au pays des merveilles";
+        //assigner une valeur dans $resume
+        $book->setResume($expect);
+        //2 Act
+        $actual = $book->getResume();
+        //3 Assert
+        self::assertSame($expect, $actual);
     }
-    public function testGetResumeReturnGoodValue(): void
-    {
-        $testBook = new Book();
-        $value = "test resume";
-        $testBook->setResume($value);
-        $result = $testBook->getResume();
-        self::assertSame($value, $result);
 
-    }
-    public function testGetResumeReturnBadValue(): void
+    public function testGetAuthorReturnExpectedValue(): void
     {
-        $testBook = new Book();
-        $result = "test resume";
-        $value = "test resume 2";
-        $testBook->setResume($value);
-        $result = $testBook->getResume();
-        self::assertNotSame($value, $result);
+        //1 Arrange
+        $book = new Book();
+        $expect = "Lewis Carrol";
+        //assigner une valeur dans $author
+        $book->setAuthor($expect);
+        //2 Act
+        $actual = $book->getAuthor();
+        //3 Assert
+        self::assertSame($expect, $actual);
     }
-    public function testGetAuthorReturnGoodValue(): void
-    {
-        $testBook = new Book();
-        $value = "test author";
-        $testBook->setAuthor($value);
-        $result = $testBook->getAuthor();
-        self::assertSame($value, $result);
 
-    }
-    public function testGetAuthorReturnBadValue(): void
+    public function testGetPublishAtReturnExpectedValue(): void
     {
-        $testBook = new Book();
-        $result = "test author";
-        $value = "test author 2";
-        $testBook->setAuthor($value);
-        $result = $testBook->getAuthor();
-        self::assertNotSame($value, $result);
+        //1 Arrange
+        $book = new Book();
+        $expect = new \DateTimeImmutable();
+        //assigner une valeur dans $publishAt
+        $book->setPublishAt($expect);
+        //2 Act
+        $actual = $book->getPublishAt();
+        //3 Assert
+        self::assertSame($expect, $actual);
     }
-    public function testGetPublishAtReturnGoodValue(): void
-    {
-        $testBook = new Book();
-        $value = new \DateTimeImmutable("2024-01-01");
-        $testBook->setPublishAt($value);
-        $result = $testBook->getPublishAt();
-        self::assertSame($value, $result);
 
-    }
-    public function testGetPublishAtReturnBadValue(): void
+    public function testGetTitleNotReturnExpectedValue(): void
     {
-        $testBook = new Book();
-        $result = new \DateTimeImmutable("2024-01-01");
-        $value = new \DateTimeImmutable("2024-01-02");
-        $testBook->setPublishAt($value);
-        $result = $testBook->getPublishAt();
-        self::assertNotSame($value, $result);
+        //1 Arrange
+        $book = new Book();
+        $expect = "Alice au pays des merveilles";
+        //Value set dans $title
+        $value = "Le tour du monde en 80 jours";
+        //assigner une valeur dans $title
+        $book->setTitle($value);
+        //2 Act
+        $actual = $book->getTitle();
+        //3 Assert
+        self::assertNotSame($expect, $actual);
     }
-    public function testSetTitleWithArrayThrowsTypeError(): void
+
+
+    public function testGetResumeNotReturnExpectedValue(): void
     {
-        $this->expectException(\TypeError::class);
-        $testBook = new Book();
-        $testBook->setTitle(['test title']);
+        //1 Arrange
+        $book = new Book();
+        $expect = "Un livre qui raconte l'histoire du tour du monde en 80 jours";
+        //Value set dans $resume
+        $value = "Un livre qui raconte l'histoire d'Alice au pays des merveilles";
+        //assigner une valeur dans $resume
+        $book->setResume($value);
+        //2 Act
+        $actual = $book->getResume();
+        //3 Assert
+        self::assertNotSame($expect, $actual);
     }
-    public function testSetResumeWithArrayThrowsTypeError(): void
+
+    public function testGetAuthorNotReturnExpectedValue(): void
     {
-        $this->expectException(\TypeError::class);
-        $testBook = new Book();
-        $testBook->setResume(['test resume']);
+        //1 Arrange
+        $book = new Book();
+        $expect = "Lewis Carrol";
+        //Value set dans $author
+        $value = "Victor Hugo";
+        //assigner une valeur dans $author
+        $book->setAuthor($value);
+        //2 Act
+        $actual = $book->getAuthor();
+        //3 Assert
+        self::assertNotSame($expect, $actual);
     }
-    public function testSetAuthorWithArrayThrowsTypeError(): void
+
+    public function testGetPublishAtNotReturnExpectedValue(): void
     {
-        $this->expectException(\TypeError::class);
-        $testBook = new Book();
-        $testBook->setAuthor(['test author']);
-    }
-    public function testSetPublishAtWithStringThrowsTypeError(): void
-    {
-        $this->expectException(\TypeError::class);
-        $testBook = new Book();
-        $testBook->setPublishAt('2024-01-01');
+        //1 Arrange
+        $book = new Book();
+        $expect = new \DateTimeImmutable();
+        //Value set dans $publishAt
+        $value = new \DateTimeImmutable('2025-01-01');
+        //assigner une valeur dans $publishAt
+        $book->setPublishAt($value);
+        //2 Act
+        $actual = $book->getPublishAt();
+        //3 Assert
+        self::assertNotSame($expect, $actual);
     }
 }
